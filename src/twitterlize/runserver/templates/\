@@ -1,0 +1,133 @@
+<script src="http://mbostock.github.com/d3/d3.js"></script>
+<script type="text/javascript" src="{{static_url("js/d3.geo.js")}}"></script>
+<link type="text/css" rel="stylesheet" href="http://mbostock.github.com/d3/talk/20111018/colorbrewer/colorbrewer.css"/>
+
+<style type="text/css">
+
+svg {
+  width:  600px;
+  height: 600px;
+  pointer-events: all;
+}
+
+#header {
+  top: 7px;
+  left: 685px;
+  text-align: right;
+  width: auto;
+}
+
+#header div {
+  font-size: 12px;
+}
+
+.tip { color: #999; }
+
+
+
+#myModal .modal-body{
+    max-height: 600px;
+}
+#myModal{
+    width: 800px;
+    margin: -400px 0 0 -380px;
+}
+#svgglobe{
+    width: 600px;
+}
+#countrydesc{
+    width: 100px;
+}
+
+#mbody {
+    background-color: #444444;
+    background-image: -webkit-gradient(linear, left top, right bottom, from(#000), to(#333)); 
+    background-image: -webkit-linear-gradient(left top, #000, #333);
+    background-image: -moz-linear-gradient(left top, #000, #333);
+    overflow: hidden;
+}
+ 
+#info {
+    position: absolute;
+    z-index: 10;
+    left: 25px;
+    top: 25px;
+}
+ 
+#defs {
+    height: 0;
+    width:0;
+}
+ 
+.frame {
+    fill: none;
+    pointer-events: all;
+}
+ 
+.feature {
+    fill: #6CCC00;
+    stroke: #fff;
+    stroke-width: .5px;
+}
+ 
+.globe {
+    stroke: rgba(255, 255, 255, .5);
+    stroke-width: .25px;
+}
+ 
+.star {
+    fill: #fff;
+    stroke: rgba(255, 255, 255, .5);
+    stroke-width: .25px;
+}
+    </style>
+
+
+<!-- Modal -->
+<svg id="defs">
+    <defs>
+        <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#005C99;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#0099FF;stop-opacity:1" />
+        </linearGradient>
+        <filter id="glow">
+            <feColorMatrix type="matrix"
+                values=
+                "0 0 0 0   0
+                 0 0 0 0.9 0
+                 0 0 0 0.9 0
+                 0 0 0 1   0"/>
+            <feGaussianBlur stdDeviation="5.5" result="coloredBlur"/>
+            <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
+</svg>
+
+
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Select a country...</h3>
+  </div>
+  <div class="modal-body">
+    <div id="mbody">
+          <div id="header">
+            <div class="tip">drag to rotate</div>
+          </div>
+          <div id="svgglobe">
+          </div>
+	  <div id="countrydesc"> 
+	     <h1> aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa </h1>
+	  </div>
+    </div
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary">Go to selected!</button>
+  </div>
+</div>
+
+<script type="text/javascript" src="{{static_url("js/d3-globe2.js")}}"></script>

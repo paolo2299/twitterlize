@@ -1,0 +1,50 @@
+{% extends "main.html" %}
+
+{%block maincontent %}
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">
+          <div class="row-fluid">
+            {% module Template("map.html", user_tweets=user_tweets, hashtag_tweets=hashtag_tweets) %}
+          </div>
+          <div>
+            {% module Template("globe-modal.html", user_tweets=user_tweets, hashtag_tweets=hashtag_tweets) %}
+	  </div>
+          <div class="entitylist">
+          {% module Template("entitylist.html", users=users, hashtags=hashtags) %}
+          </div> <!-- /entity-list -->
+        </div> <!-- /span2 -->
+        <div class="span9" id="top-tweets">
+          <div class="row-fluid">
+            <ul class="nav nav-pills green" id="entity-content-buttons">
+              <li class="active"><a data-toggle="pill">Top tweets</a></li>
+              <li><a data-toggle="pill">Live feed</a></li>
+              <li><a data-toggle="pill">User profile</a></li>
+            </ul>
+          </div>
+          <div class="row-fluid">
+            {% module Template("tweetlist.html", user_tweets=user_tweets, hashtag_tweets=hashtag_tweets) %}
+          </div>
+        </div> <!-- /span10 -->
+      </div> <!-- /row-fluid -->
+    </div> <!-- /container-fluid -->
+
+  </body>
+</html>
+{% end %}
+
+{% block javascript %}
+<script>
+function refresh_users(){
+  $(".entitylist").load("/topusers");
+}
+$('#top-hashtags').bind('click', function(){
+    $('#hashtag-list').attr('class','');
+    $('[id^=selector-hashtag]:first').trigger('click');
+});
+$('#top-users').bind('click', function(){
+    $('#user-list').attr('class','');
+    $('[id^=selector-user]:first').trigger('click');
+});
+</script>
+{% end %}

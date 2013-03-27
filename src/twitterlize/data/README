@@ -1,0 +1,7 @@
+world-countries.json was obtained from http://mbostock.github.com/d3/talk/20111018/world-countries.json
+
+Three of the country ids were missing (Somaliland, Western Sahara and Northern Cyprus). These were all listed as '-99'.
+In this version of the file, I've filled in the missing ids as following:
+Western Sahara - ESH
+Somaliland - SOL (made up)
+Northern Cyprus - CYN (made up)

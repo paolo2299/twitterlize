@@ -1,0 +1,12 @@
+#!/bin/bash
+
+echo 'running sample streaming api...'
+sudo python /home/paul/projects/twitterlize/src/twitterlize/web/twitter/streaming/client.py sample > /home/ec2-user/streamlog 2>&1 &
+echo 'sleeping for 2 minutes...'
+sleep 120
+echo 'running filter streaming api'
+sudo python /home/paul/projects/twitterlize/src/twitterlize/web/twitter/streaming/client.py filter > /home/ec2-user/filterlog 2>&1 &
+echo 'sleeping for 2 minutes...'
+sleep 120
+echo 'running daemon...'
+sudo python /home/paul/projects/twitterlize/src/twitterlize/daemon.py daemon > /home/ec2-user/daemonlog 2>&1 &

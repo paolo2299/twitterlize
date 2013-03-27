@@ -1,0 +1,44 @@
+<ul class ="nav nav-tabs" id="top-entities">
+  <li class="active" id="top-users"><a href="#users" data-toggle="tab"><b>@USERS</b></a></li>
+  <li id="top-hashtags"><a href="#hashtags" data-toggle="tab"><b>#TAGS</b></a></li>
+</ul>
+<div class="tab-content">
+   <div class="tab-pane active" id="users">
+        <ul class="nav nav-pills nav-stacked" id="users">
+          {% for i, (username, count, percent) in enumerate([(u["text"], u["count"], u["percent"]) for u in users]) %}
+            <li id="user-list" {% if i==0 %} class="active" {% end %}>
+              <a href="#top-tweets-user-{{username}}" data-toggle="pill" id=selector-user-{{username}}><b>@{{username}}</b></a>
+                <div class="progress progress-striped">
+                   <div class="bar" style="width: {{percent}}%;">{%if percent>=50 %}
+                                                                      <b>{{count}} tweets</b> 
+                                                                 {% else %}
+                                                                     {%if percent >=20 %}
+                                                                          <b>{{count}}</b>
+                                                                     {% end %}
+                                                                 {% end %}
+                    </div>
+                </div>
+            </li>
+          {% end %}
+        </ul> <!-- /ul -->
+    </div>
+   <div class="tab-pane" id="hashtags">
+        <ul class="nav nav-pills nav-stacked" id="hashtags">
+          {% for i, (hashtag, count, percent) in enumerate([(h["text"], h["count"], h["percent"]) for h in hashtags]) %}
+            <li id="hashtag-list">
+              <a href="#top-tweets-hashtag-{{hashtag}}" data-toggle="pill" id=selector-hashtag-{{hashtag}}><b>#{{hashtag}}</b></a>
+                <div class="progress progress-striped">
+                   <div class="bar" style="width: {{percent}}%;">{%if percent>=50 %}
+                                                                      <b>{{count}} tweets</b> 
+                                                                 {% else %}
+                                                                     {%if percent >=20 %}
+                                                                          <b>{{count}}</b>
+                                                                     {% end %}
+                                                                 {% end %}
+                    </div>
+                </div>
+            </li>
+          {% end %}
+        </ul> <!-- /ul -->
+    </div>
+</div>
