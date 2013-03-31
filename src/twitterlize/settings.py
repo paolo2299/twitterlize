@@ -10,7 +10,7 @@ class EnvSettings():
     memcachedhost = "localhost"
     memcachedport = 11211
     homedir = os.path.expanduser("~")
-    repository = os.path.join(os.path.expanduser("~"), "projects", "twitterlize", "src")
+    repository = os.path.join(os.path.expanduser("~"), "projects", "twitterlize2", "src")
 
 DATA_FOLDER = os.path.join(EnvSettings.repository, "twitterlize", "data")
 
@@ -24,7 +24,7 @@ Aggregation = {
 Globe = {
          "grid":{
 	         "projection": "goode",
-		 "resolution_digits": 4
+		     "resolution_digits": 4
 		}
 	}
 
@@ -32,7 +32,11 @@ RequestCache = {
                 "namespace": "rqc:"
                }
 
-TESTMODE = True
+TrackwordCache = {
+                "namespace": "twc:"
+                }
+
+TESTMODE = False
 TEST_SUFFIX = TESTMODE and "_test" or ""
 
 Twitter = {
@@ -40,7 +44,7 @@ Twitter = {
 	       [
 	         {
 		  "username": "paolo_lawson",
-                  "password": "*******"
+                  "password": "d0ublet0p"
 		 },
                  {
 		  "username": "PaoloLawson",

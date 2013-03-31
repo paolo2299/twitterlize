@@ -7,13 +7,13 @@ from twitterlize.utils import serialize, deserialize #TODO
 class Memcache(Cache):
     def __init__(self):
         self._memcache = None
-	self._namespace = settings.Memcache["namespace"]
+        self._namespace = settings.Memcache["namespace"]
 
     @property
     def memcache(self):
         if not self._memcache:
-	    self._memcache = MemcacheFactory.getconn()
-	return self._memcache
+            self._memcache = MemcacheFactory.getconn()
+        return self._memcache
 
     def put(self, key, val):
         key = self._namespace + key
@@ -22,11 +22,11 @@ class Memcache(Cache):
     def get(self, key):
         key = self._namespace + key
         val = self.memcache.get(key)
-	if val == "X":
-	    return None
-	if val:
-	    val = deserialize(val)
-	return val
+        if val == "X":
+            return None
+        if val:
+            val = deserialize(val)
+        return val
 
     def delete(self, key):
         key = self._namespace + key

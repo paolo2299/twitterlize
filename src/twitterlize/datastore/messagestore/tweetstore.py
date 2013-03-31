@@ -1,6 +1,5 @@
 from twitterlize.datastore.messagestore import MessageStore
-from twitterlize.geo import Geo
-from twitterlize.enums import EntityType
+
 
 class TweetStore(MessageStore):
     def __init__(self):
@@ -18,12 +17,12 @@ class TweetStore(MessageStore):
 
         """
         if not timestamp:
-	    timestamp = tweet.timestamp
-	    if not timestamp:
-	        return
-	segs = tweet.segmentations
-	for segmentation in segs:
-	    for entitytype, entities in tweet.entities.items():
-	        for entity in entities:
-	            super(TweetStore, self).put(tweet, entitytype, segmentation, entity, timestamp)
+            timestamp = tweet.timestamp
+            if not timestamp:
+                return
+        segs = tweet.segmentations
+        for segmentation in segs:
+            for entitytype, entities in tweet.entities.items():
+                for entity in entities:
+                    super(TweetStore, self).put(tweet, entitytype, segmentation, entity, timestamp)
 

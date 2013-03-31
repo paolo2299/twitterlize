@@ -16,8 +16,8 @@ class Geo(object):
     @classmethod
     def countries(cls):
         if not cls._countries:
-	    cls._countries = cls._load_countries()
-	return cls._countries
+            cls._countries = cls._load_countries()
+        return cls._countries
 
     @classmethod
     def country_codes(cls):
@@ -26,20 +26,20 @@ class Geo(object):
     @classmethod
     def get_country(cls, point):
         if not cls._lookup:
-	    cls._lookup = cls._load_lookup()
-	try:
-	    proj_point = cls.proj(point[0], point[1], errcheck=True)
-	except RuntimeError:
-	    return None
-	proj_point = cls.snap_to_grid(proj_point)
-	return cls._lookup.get(json.dumps(proj_point))
+            cls._lookup = cls._load_lookup()
+        try:
+            proj_point = cls.proj(point[0], point[1], errcheck=True)
+        except RuntimeError:
+            return None
+        proj_point = cls.snap_to_grid(proj_point)
+        return cls._lookup.get(json.dumps(proj_point))
 
     @classmethod
     def snap_to_grid(cls, point):
-	resolution = cls._resolution
+        resolution = cls._resolution
         def _snap(coord):
-	    return int(round(coord, -1*resolution))
-	return map(_snap, point)
+            return int(round(coord, -1*resolution))
+        return map(_snap, point)
 
     @staticmethod
     def reverse_coords(coords):

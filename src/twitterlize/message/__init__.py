@@ -1,4 +1,6 @@
 from twitterlize.utils import hexhash
+from twitterlize.enums import EntityType
+
 
 class Message(object):
     """Baseclass to represent a message and associated metadata.
@@ -20,10 +22,10 @@ class Message(object):
 			  returned by the _parse method.
 
 	"""
-	if raw:
-	    self.data = self._parse(data)
-	else:
-	    self.data = data
+        if raw:
+            self.data = self._parse(data)
+        else:
+            self.data = data
 
     def _parse(self, data):
         """Parse the data used to construct this object.
@@ -48,9 +50,20 @@ class Message(object):
 	    (str): text encoded as a utf8 string.
 
         """
-	if type(text) != unicode:
-	    raise Exception("Non-unicode text passed to Message._utf8: %s" % text)
+        if type(text) != unicode:
+            raise Exception("Non-unicode text passed to Message._utf8: %s" % text)
         return text.encode('utf8')
+
+    @property
+    def id(self):
+        """Get message native ID.
+
+    Returns:
+        (str): message native ID.
+
+    """
+        raise NotImplementedError("Subclass %s of Message needs to \
+                                            implement id method" % self.__class__)
 
     @property
     def text(self):
@@ -75,33 +88,33 @@ class Message(object):
                                             implement author method" % self.__class__)
 
     @property
-    def authoruuid(cls):
+    def authoruuid(self):
         """Generate hex uuid of message author. Ensures uniqueness across different 
 	           message types.
 
-	Returns:
-	    (str): hex uuid of message author. 
+	    Returns:
+	        (str): hex uuid of message author. 
 
-	"""
-	return hexhash(':'.join([self.__class__.TYPEID, self.author]))
+	    """
+        return hexhash(':'.join([self.__class__.TYPEID, self.author]))
 
     @property
     def authorpic(self):
         """Get url of author's picture.
 
-	Returns:
-	    (str): url of author's picture.
+	    Returns:
+	        (str): url of author's picture.
 
-	"""
+	    """
         raise NotImplementedError("Subclass %s of Message needs to \
                                             implement picture method" % self.__class__)
     @property
     def timestamp(self):
         """Get timestamp of message.
 
-	Returns:
-	    (int): UNIX timestamp of message.
+	    Returns:
+	        (int): UNIX timestamp of message.
 
-	"""
+	    """
         raise NotImplementedError("Subclass %s of Message needs to \
                                             implement timestamp method" % self.__class__)

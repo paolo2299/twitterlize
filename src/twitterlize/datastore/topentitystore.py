@@ -18,48 +18,48 @@ class TopEntityStore(MongoStore):
 
     def put(self, message, timestamp=None):
         if not timestamp:
-	    timestamp = message.timestamp
-	    if not timestamp:
-	        return
-	timeslice = get_timeslice(timestamp)
-	segs = message.segmentations
-	entities = message.entities
-	for segmentation in segs:
-	    for entitytype, entities in message.entities.items():
-	        for entity in entities:
-	            key = self.__class__.keyGen(entitytype, segmentation, timeslice)
-	            self.store.update({"_id":key},{"$inc":{entity: 1}}, upsert=True)
+            timestamp = message.timestamp
+        if not timestamp:
+            return
+        timeslice = get_timeslice(timestamp)
+        segs = message.segmentations
+        entities = message.entities
+        for segmentation in segs:
+            for entitytype, entities in message.entities.items():
+                for entity in entities:
+                    key = self.__class__.keyGen(entitytype, segmentation, timeslice)
+                    self.store.update({"_id":key},{"$inc":{entity: 1}}, upsert=True)
 
     def get_top(self, entitytype, segmentation, timestamp=None):
         """Get the top entities in this segmentation."""
-	all_docs = []
-	fetch = settings.Aggregation["top_entities"]
-	timestamp = timestamp or int(time.time())
-	segmentation = pad5(segmentation)
-	to_timestamp = get_timeslice(timestamp)
-	from_timestamp = to_timestamp - settings.Aggregation["history"]
+        all_docs = []
+        fetch = settings.Aggregation["top_entities"]
+        timestamp = timestamp or int(time.time())
+        segmentation = pad5(segmentation)
+        to_timestamp = get_timeslice(timestamp)
+        from_timestamp = to_timestamp - settings.Aggregation["history"]
         step = settings.Aggregation["timeslice_length"]
-	current = from_timestamp
-	while current <= to_timestamp:
+        current = from_timestamp
+        while current <= to_timestamp:
             key = self.__class__.keyGen(entitytype, segmentation, current)
-	    doc = self.find_one(key)
-	    if doc:
-	        del doc['_id']
-	        all_docs.append(doc)
-	    current += step
-	result = add_dicts(all_docs)
-	return sorted(result.items(), key=itemgetter(1), reverse=True)[:fetch]
+            doc = self.find_one(key)
+            if doc:
+                del doc['_id']
+                all_docs.append(doc)
+            current += step
+        result = add_dicts(all_docs)
+        return sorted(result.items(), key=itemgetter(1), reverse=True)[:fetch]
 
     def get_top_multiple(self, entitytype, segs, timestamp=None):
         entitydicts = []
         for seg in segs:
-	    entitydicts.append(dict(self.get_top(entitytype, seg, timestamp)))
-	aggregated = add_dicts(entitydicts)
-	return sorted(aggregated.items(), key=itemgetter(1), reverse=True)
-	
+            entitydicts.append(dict(self.get_top(entitytype, seg, timestamp)))
+        aggregated = add_dicts(entitydicts)
+        return sorted(aggregated.items(), key=itemgetter(1), reverse=True)
+        
     @staticmethod
     def keyGen(entitytype, segmentation, timeslice):
         entitytype = pad2(entitytype)
-	segmentation = pad5(segmentation)
-	return ':'.join([entitytype, segmentation, str(timeslice)])
+        segmentation = pad5(segmentation)
+        return ':'.join([entitytype, segmentation, str(timeslice)])
 
