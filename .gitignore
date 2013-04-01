@@ -1,3 +1,4 @@
 *.pyc
 country-lookup.json
 dump.rdb
+settings.py
