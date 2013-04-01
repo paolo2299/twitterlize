@@ -21,13 +21,16 @@ def cache_responses(t=None):
                             namespace=settings.HtmlCache["namespace"])
     api = TwitterAPI()
     countries = Geo.country_codes()
+    top_tweets_cache = {}
     for country in countries:
+        print "*************"
         print country
-        #debugging
+        print "*************"
+        """#debugging
+        if country == "BGR":
+            import pdb; pdb.set_trace()
         """
-        if country == "USA":
-        import pdb; pdb.set_trace()
-        """
+        
         response = {}
         segmentation = "C" + country
         for entitytype in entitytypes:
@@ -37,7 +40,11 @@ def cache_responses(t=None):
                 data = {"text":entity, "count":count, "tweets":[]}
                 #TODO(paul) settings.EntityTypes.ALL = ""
                 #TODO(paul) cache already retrieved entitytype/seg/entity combinations
-                tweets = tweetstore.get_top(entitytype, "", entity, ts)[:5]
+                tweets = top_tweets_cache.get((entitytype, entity, ts))
+                if not tweets:
+                    print "fetching tweets for " + str((entitytype, entity, ts))
+                    tweets = tweetstore.get_top(entitytype, "", entity, ts)[:10]
+                    top_tweets_cache[(entitytype, entity, ts)] = tweets
                 for tweetdata, count in tweets:
                     data["tweets"].append({"html":tweet_html(tweetdata, html_cache, api), "count": count})
                 response[entitytype].append(data)

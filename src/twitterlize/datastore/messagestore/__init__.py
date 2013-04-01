@@ -52,14 +52,24 @@ class MessageStore(MongoStore):
         key_from = self.__class__.keyGen(entitytype, segmentation, entity, from_timestamp)
         key_to = self.__class__.keyGen(entitytype, segmentation, entity, to_timestamp)
         messagecount = defaultdict(int)
-        docs = self.find({'_id':{'$gte':key_from, '$lte':key_to}})
-        for doc in docs:
-            message = MessageAdapter.from_dict(entitytype, doc)
-            id = message.id
-            un = message.username
-            sn = message.screen_name
-            text = message.text
-            messagecount[json.dumps((id,text,un,sn))] += 1
+        batch = 1
+        while True:
+            print "fetching batch %s" % batch
+            found = False
+            query = {'_id':{'$gt':key_from, '$lte':key_to}}
+            docs = self.find(query).sort("_id", 1).limit(1000)
+            for doc in docs:
+                found = True
+                key_from = doc["_id"]
+                message = MessageAdapter.from_dict(entitytype, doc)
+                id = message.id
+                un = message.username
+                sn = message.screen_name
+                text = message.text
+                messagecount[json.dumps((id,text,un,sn))] += 1
+            batch += 1
+            if not found:
+                break
         return sorted(messagecount.items(), key=itemgetter(1), reverse=True)[:fetch]
 
     @staticmethod
