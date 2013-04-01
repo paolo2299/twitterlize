@@ -28,8 +28,9 @@ def get_streaming_args(mode):
             all_hashtags = format_track(TopEntityStore().get_top_multiple(EntityType.TwitterHashtag, segs))
             all_usermentions = format_track(TopEntityStore().get_top_multiple(EntityType.TwitterUserMention, segs))
             used_hashtags, used_usermentions = get_used_trackwords(idx)
-            hashtags = [ht for ht in all_hashtags if not ht in used_hashtags]
-            usermentions = [um for um in all_usermentions if not um in used_usermentions]
+            used_hashtags, used_usermentions = set(used_hashtags), set(used_usermentions)
+            hashtags = [ht for ht in all_hashtags if not ht in used_hashtags][:200]
+            usermentions = [um for um in all_usermentions if not um in used_usermentions][:200]
             set_used_trackwords(idx, hashtags, usermentions)
             payload['track'] = hashtags + usermentions
     else:
@@ -39,7 +40,7 @@ def get_streaming_args(mode):
 def get_used_trackwords(not_this_index):
     used_hashtags, used_usermentions = [], []
     last_index = len(settings.Twitter["accounts"])
-    indices = range(1, last_index + 1)
+    indices = range(1, last_index)
     cache = RedisCache(namespace=settings.TrackwordCache["namespace"])
     for idx in indices:
         if idx == not_this_index:
@@ -61,7 +62,7 @@ def set_used_trackwords(idx, hashtags, usermentions):
     
 def reset_used_trackwords():
     last_index = len(settings.Twitter["accounts"])
-    indices = range(1, last_index + 1)
+    indices = range(1, last_index)
     for idx in indices:
         hashtag_key = "streamer%s:hashtags" % idx
         usermention_key = "streamer%s:usermentions" % idx
@@ -90,7 +91,10 @@ if __name__ == "__main__":
             success = False
         if not success:
             print "streaming failed, retrying..."
-            retries+=1
-            if retries>20:
+            retries += 1
+            if retries > 20:
                 raise Exception("Too many retries")
+        else:
+            #sufficient time has passed with no failures
+            retries = 0
 
