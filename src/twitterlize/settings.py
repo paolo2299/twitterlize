@@ -44,7 +44,7 @@ Twitter = {
 	       [
 	         {
 		  "username": "paolo_lawson",
-                  "password": "d0ublet0p"
+                  "password": "*******"
 		 },
                  {
 		  "username": "PaoloLawson",

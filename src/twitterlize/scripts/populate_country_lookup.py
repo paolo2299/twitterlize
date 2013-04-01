@@ -35,11 +35,11 @@ def min_max_coords(countries):
     min_x, max_x, min_y, max_y = None, None, None, None
     for areas in countries.values():
         for coords in areas:
-	    for x,y in coords:
-	        min_x = min_x and min(x, min_x) or x
-	        max_x = max_x and max(x, max_x) or x
-	        min_y = min_y and min(y, min_y) or y
-	        max_y = max_y and max(y, max_y) or y
+            for x,y in coords:
+                min_x = min_x and min(x, min_x) or x
+                max_x = max_x and max(x, max_x) or x
+                min_y = min_y and min(y, min_y) or y
+                max_y = max_y and max(y, max_y) or y
     return min_x, min_y, max_x, max_y
 
 def locate(point, countries, boundaries, projected=False):
@@ -57,21 +57,21 @@ def locate(point, countries, boundaries, projected=False):
     for country, areas in countries.items():
         minx, miny, maxx, maxy = boundaries[country]
         if x < minx or x > maxx or y < miny or y > maxy:
-	    continue
+            continue
         for coords in areas:
             if point_in_poly(x, y, coords):
-	        result.append(country)
-		break
+                result.append(country)
+                break
     located = None
     if result:
         if len(result) > 1:
-	    if result[0] == "LSO" or result[1] == "LSO":
-	        located = "LSO"
-	    elif result[0] == "FRA" or result[1] == "FRA":
-	        located = "FRA"
-	else:
-	    if result:
-	        located = result[0]
+            if result[0] == "LSO" or result[1] == "LSO":
+                located = "LSO"
+            elif result[0] == "FRA" or result[1] == "FRA":
+                located = "FRA"
+        else:
+            if result:
+                located = result[0]
     return located
 
 def round_to_grid(x):
@@ -82,14 +82,14 @@ def get_country_boundaries(countries):
     boundaries = {}
     for country, areas in countries.items():
         minx, maxx, miny, maxy = None, None, None, None
-	for area in areas:
-	    for coord in area:
-	        c_x, c_y = coord[0], coord[1]
-	        minx = minx and min(c_x, minx) or c_x
-	        miny = miny and min(c_y, miny) or c_y
-	        maxx = maxx and max(c_x, maxx) or c_x
-	        maxy = maxy and max(c_y, maxy) or c_y
-	boundaries[country] = (minx, miny, maxx, maxy)
+        for area in areas:
+            for coord in area:
+                c_x, c_y = coord[0], coord[1]
+                minx = minx and min(c_x, minx) or c_x
+                miny = miny and min(c_y, miny) or c_y
+                maxx = maxx and max(c_x, maxx) or c_x
+                maxy = maxy and max(c_y, maxy) or c_y
+        boundaries[country] = (minx, miny, maxx, maxy)
     return boundaries
 
 def generate_lookup(countries):
@@ -114,20 +114,20 @@ def generate_lookup(countries):
     boundaries = get_country_boundaries(countries)
     for i_x in range(steps_x + 1):
         for i_y in range(steps_y + 1):
-	    point = (min_x + i_x*step, min_y + i_y*step)
-	    #Check if point belongs to projection
-	    try:
-	        proj(point[0], point[1], inverse=True, errcheck=True)
-		#check point is in a country
-		found = locate(point, countries, boundaries, projected=True)
+            point = (min_x + i_x*step, min_y + i_y*step)
+            #Check if point belongs to projection
+            try:
+                proj(point[0], point[1], inverse=True, errcheck=True)
+                #check point is in a country
+                found = locate(point, countries, boundaries, projected=True)
                 if found:
                     lookup[json.dumps(point)] = found
-		    added += 1
-	    except RuntimeError:
-	        pass
-	    c += 1
-	    if not c % 10000:
-	        print "processed %s of %s (%s added) in %s" % (c, total_points, added, round(time.time() - start, 1))
+                    added += 1
+            except RuntimeError:
+                pass
+            c += 1
+            if not c % 10000:
+                print "processed %s of %s (%s added) in %s" % (c, total_points, added, round(time.time() - start, 1))
     return lookup
 
 if __name__ == "__main__":

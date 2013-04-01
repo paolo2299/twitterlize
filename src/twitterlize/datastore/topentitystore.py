@@ -3,7 +3,7 @@ from twitterlize.datastore.mongo.store import MongoStore
 from twitterlize import settings
 from twitterlize.utils import pad2, pad5, get_timeslice, add_dicts
 from operator import itemgetter
-from twitterlize.enums import EntityType
+
 
 class TopEntityStore(MongoStore):
     """Store counts of entities extracted from messages.

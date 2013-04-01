@@ -23,24 +23,24 @@ def cache_responses(t=None):
     countries = Geo.country_codes()
     for country in countries:
         print country
-	#debugging
-	"""
-	if country == "USA":
-	    import pdb; pdb.set_trace()
-	"""
+        #debugging
+        """
+        if country == "USA":
+        import pdb; pdb.set_trace()
+        """
         response = {}
         segmentation = "C" + country
         for entitytype in entitytypes:
-	    response[entitytype] = []
-	    top_entities = entitystore.get_top(entitytype, segmentation, ts)[:8]
-	    for entity, count in top_entities:
-	        data = {"text":entity, "count":count, "tweets":[]}
-		#TODO(paul) settings.EntityTypes.ALL = ""
-		#TODO(paul) cache already retrieved entitytype/seg/entity combinations
-	        tweets = tweetstore.get_top(entitytype, "", entity, ts)[:5]
-	        for tweetdata, count in tweets:
-	            data["tweets"].append({"html":tweet_html(tweetdata, html_cache, api), "count": count})
-		response[entitytype].append(data)
+            response[entitytype] = []
+            top_entities = entitystore.get_top(entitytype, segmentation, ts)[:8]
+            for entity, count in top_entities:
+                data = {"text":entity, "count":count, "tweets":[]}
+                #TODO(paul) settings.EntityTypes.ALL = ""
+                #TODO(paul) cache already retrieved entitytype/seg/entity combinations
+                tweets = tweetstore.get_top(entitytype, "", entity, ts)[:5]
+                for tweetdata, count in tweets:
+                    data["tweets"].append({"html":tweet_html(tweetdata, html_cache, api), "count": count})
+        response[entitytype].append(data)
         cache.put(segmentation, response)
 
 def tweet_html(tweetdata, cache, api):
@@ -48,7 +48,7 @@ def tweet_html(tweetdata, cache, api):
     if not html_template:
         template_id = settings.HtmlCache["template_id"]
         html_template = api.get_oembed(template_id)["html"]
-	cache.put("status_template", html_template)
+        cache.put("status_template", html_template)
     template_id = settings.HtmlCache["template_id"]
     template_text = settings.HtmlCache["template_text"]
     template_username = settings.HtmlCache["template_username"]
@@ -70,6 +70,6 @@ if __name__ == '__main__':
     if mode == 'daemon':
         run(60)
     elif mode == 'cache':
-        cache_responses(1358207352)
+        cache_responses()
     else:
         raise Exception('Invalid mode: %s' % mode)

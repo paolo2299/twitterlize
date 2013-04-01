@@ -118,3 +118,4 @@ class Message(object):
 	    """
         raise NotImplementedError("Subclass %s of Message needs to \
                                             implement timestamp method" % self.__class__)
+        

@@ -3,6 +3,7 @@ from twitterlize import settings
 from twitterlize.cache import CacheType
 from twitterlize.datastore.mongo.store import MongoStore
 from twitterlize.datastore.topentitystore import TopEntityStore
+from twitterlize.message.adapter import MessageAdapter
 from twitterlize.utils import hexuuid, pad2, pad3, pad5, pad
 from collections import defaultdict
 from operator import itemgetter
