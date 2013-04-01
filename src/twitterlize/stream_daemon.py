@@ -25,8 +25,8 @@ def get_streaming_args(mode):
         #We're only allowed to track 400 keywords
         lock = FileLock('/tmp/trackwords')
         with lock:
-            all_hashtags = format_track(TopEntityStore().get_top_multiple(EntityType.TwitterHashtag, segs))
-            all_usermentions = format_track(TopEntityStore().get_top_multiple(EntityType.TwitterUserMention, segs))
+            all_hashtags = filter_track(TopEntityStore().get_top_multiple(EntityType.TwitterHashtag, segs))
+            all_usermentions = filter_track(TopEntityStore().get_top_multiple(EntityType.TwitterUserMention, segs))
             used_hashtags, used_usermentions = get_used_trackwords(idx)
             used_hashtags, used_usermentions = set(used_hashtags), set(used_usermentions)
             hashtags = [ht for ht in all_hashtags if not ht in used_hashtags][:200]
@@ -70,8 +70,8 @@ def reset_used_trackwords():
         cache.delete(hashtag_key)
         cache.delete(usermention_key)
 
-def format_track(words):
-    return [utf8(w[0])[:60] for w in words]
+def filter_track(words):
+    return [utf8(w[0]) for w in words if utf8(w[0])[:60] == utf8(w[0])]
 
 
 if __name__ == "__main__":

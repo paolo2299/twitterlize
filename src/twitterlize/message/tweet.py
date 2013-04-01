@@ -46,6 +46,20 @@ class Tweet(Message):
         return self.data.get("user", {}).get("profile_image_url")
 
     @property
+    def username(self):
+        """See superclass docstring."""
+        if self.is_retweet:
+            return self.retweet_data.get("user", {}).get("name")
+        return self.data.get("user", {}).get("name")
+
+    @property
+    def screen_name(self):
+        """See superclass docstring."""
+        if self.is_retweet:
+            return self.retweet_data.get("user", {}).get("screen_name")
+        return self.data.get("user", {}).get("screen_name")
+
+    @property
     def entities(self):
         data = self.data
         if self.is_retweet:

@@ -40,7 +40,7 @@ def cache_responses(t=None):
                 tweets = tweetstore.get_top(entitytype, "", entity, ts)[:5]
                 for tweetdata, count in tweets:
                     data["tweets"].append({"html":tweet_html(tweetdata, html_cache, api), "count": count})
-        response[entitytype].append(data)
+                response[entitytype].append(data)
         cache.put(segmentation, response)
 
 def tweet_html(tweetdata, cache, api):
