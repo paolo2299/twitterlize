@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-import json
 import os.path
-import redis
-import tornado.escape
 import tornado.httpserver
 import tornado.ioloop
 import tornado.options
@@ -14,23 +11,23 @@ from twitterlize import settings
 define("port", default=8888, help="run on the given port", type=int)
 
 class Application(tornado.web.Application):
-	def __init__(self):
-		handlers = [
+    def __init__(self):
+        handlers = [
 	    (r"/", MainHandler),
 		]
-		settings = dict(
+        settings = dict(
 			template_path=os.path.join(os.path.dirname(__file__), "templates"),
 			static_path=os.path.join(os.path.dirname(__file__), "static"),
 			debug=True,
 			autoescape=None
 			)
-		tornado.web.Application.__init__(self, handlers, **settings)
+        tornado.web.Application.__init__(self, handlers, **settings)
 
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        country = self.get_argument('code')
-	segmentation = "C" + country
+        country = self.get_argument('code', 'USA')
+        segmentation = "C" + country
         cache = RedisCache(namespace=settings.RequestCache["namespace"])
         data = cache.get(segmentation)
         self.render(
@@ -70,5 +67,5 @@ def extract_tweets(data, entitytype, numentities=10, numtweets=20):
 if __name__ == "__main__":
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
-    http_server.listen(8000)
+    http_server.listen(8888)
     tornado.ioloop.IOLoop.instance().start()

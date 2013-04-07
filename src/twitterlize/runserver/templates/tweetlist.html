@@ -1,6 +1,7 @@
+<h2>Most retweeted in the last 3 hours...</h2>
 <div class="tab-content">
    {% for i, (user, tweets) in enumerate(user_tweets) %}
-       <div class="tab-pane {%if i==0 %} active {% end %}" id="top-tweets-user-{{user}}">
+       <div class="tab-pane" id="top-tweets-user-{{user}}">
          {%for tweet, count in [(t["html"], t["count"]) for t in tweets] %}
             <div class="row-fluid">
               <div class="span8"><h4>{{tweet}}</h4></div>
@@ -8,8 +9,8 @@
          {% end %}
        </div>
     {% end %}
-    {% for hashtag, tweets in hashtag_tweets %}
-       <div class="tab-pane" id="top-tweets-hashtag-{{hashtag}}">
+    {% for i, (hashtag, tweets) in enumerate(hashtag_tweets) %}
+       <div class="tab-pane {%if i==0 %} active {% end %}" id="top-tweets-hashtag-{{hashtag}}">
          {%for tweet, count in [(t["html"], t["count"]) for t in tweets] %}
             <div class="row-fluid">
               <div class="span8"><h4>{{tweet}}</h4></div>

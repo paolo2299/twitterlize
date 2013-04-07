@@ -77,7 +77,8 @@ function select_country(code, name, geo){
   projection.origin(geo);
   circle.origin(geo);
   refresh(1000);
-  $("#goto-selected").attr("href", "http://localhost:8000/?code=" + code);
+  var domain = document.domain;
+  $("#goto-selected").attr("href", "http://" + domain + ":8888/?code=" + code);
   $("#selected-country").text(name);
 }
 

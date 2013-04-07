@@ -5,10 +5,10 @@
       <div class="row-fluid">
         <div class="span3">
           <div class="row-fluid">
-            {% module Template("map.html", user_tweets=user_tweets, hashtag_tweets=hashtag_tweets) %}
+            {% module Template("map.html") %}
           </div>
           <div>
-            {% module Template("globe-modal.html", user_tweets=user_tweets, hashtag_tweets=hashtag_tweets) %}
+            {% module Template("globe-modal.html") %}
 	  </div>
           <div class="entitylist">
           {% module Template("entitylist.html", users=users, hashtags=hashtags) %}

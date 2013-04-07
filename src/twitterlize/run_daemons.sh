@@ -11,3 +11,6 @@ python stream_daemon.py entities2 &
 sleep 10
 echo "running entities3..."
 python stream_daemon.py entities3 &
+sleep 10
+echo "running cache daemon"
+python cache_daemon.py daemon

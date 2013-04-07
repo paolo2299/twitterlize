@@ -77,7 +77,6 @@ def filter_track(words):
 if __name__ == "__main__":
     mode = sys.argv[1]
     retries = 0
-    reset_used_trackwords()
     while True:
         credentials, payload, store = get_streaming_args(mode)
         while not mode == "locations" and not payload["track"]:
