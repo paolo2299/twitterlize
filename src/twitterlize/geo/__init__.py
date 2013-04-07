@@ -1,8 +1,14 @@
+"""NOTE: you should run the the script
+twitterlize/scripts/populate_country_lookup.py
+before using this class."""
+
 from pyproj import Proj
 from twitterlize.settings import Globe
 from twitterlize import settings
 import json
 import os
+import sys
+
 
 class Geo(object):
     """Manipulate coordinates and resolve them to countries."""
@@ -83,5 +89,11 @@ class Geo(object):
     @staticmethod
     def _load_lookup():
         datapath = os.path.join(settings.DATA_FOLDER, "country-lookup.json")
-        return json.loads(open(datapath).read())
+        try:
+            data = json.loads(open(datapath).read())
+            return data
+        except:
+            print """NOTE: you need to run the the script
+twitterlize/scripts/populate_country_lookup.py"""
+            sys.exit(1)
 

@@ -29,7 +29,7 @@ def utf8(x):
     elif isinstance(x, str):
         # Check encoded sensibly in UTF-8
         x.decode('utf8')
-	return x
+        return x
     raise Exception("value %s must be utf8-encoded string or unicode" % x)
 
 def url_encode_dict(in_dict):
@@ -55,8 +55,6 @@ def hexhash(data, digits=32):
     h = m.hexdigest()
     return h[(-1)*digits:]
 
-#TODO - more approriate serilaizations method? If it's already a string just leave as a string?
-#TODO - does memcache require utf8-encoded strings?
 def serialize(data):
     return json.dumps(data)
 

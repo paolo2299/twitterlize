@@ -3,7 +3,7 @@ import os.path
 import tornado.httpserver
 import tornado.ioloop
 import tornado.options
-from tornado.options import define, options
+from tornado.options import define
 import tornado.web
 from twitterlize.cache.redis import RedisCache
 from twitterlize import settings
