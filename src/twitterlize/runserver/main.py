@@ -14,6 +14,7 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
 	    (r"/", MainHandler),
+        (r"/toptweets", TopTweetsHandler)
 		]
         settings = dict(
 			template_path=os.path.join(os.path.dirname(__file__), "templates"),
@@ -30,16 +31,34 @@ class MainHandler(tornado.web.RequestHandler):
         segmentation = "C" + country
         cache = RedisCache(namespace=settings.RequestCache["namespace"])
         data = cache.get(segmentation)
+        hashtags = extract_entities(data, "ht")
+        users = extract_entities(data, "um")
+        tweets = extract_tweets(data, "ht", hashtags[0]['text'])
         self.render(
 		    "index.html",
-                    page_title = "Twitterlyze | Home",
-		    intro = "Most talked about in the last hour...",
-		    footer_text = "For more information, please email us at <a href=\"mailto:twitterlize@gmail.com\">twitterlize@gmail.com</a>.",
-                    hashtags = extract_entities(data, "ht"),
-                    users = extract_entities(data, "um"),
-		    hashtag_tweets = extract_tweets(data, "ht"),
-		    user_tweets = extract_tweets(data, "um"),
+            page_title="Twitterlyze | Home",
+		    intro="Most talked about in the last hour...",
+		    footer_text="For more information, please email us at <a href=\"mailto:twitterlize@gmail.com\">twitterlize@gmail.com</a>.",
+            hashtags=hashtags,
+            users=users,
+		    tweets=tweets,
 		  )
+
+
+class TopTweetsHandler(tornado.web.RequestHandler):
+    def get(self):
+        country = self.get_argument('code')
+        segmentation = "C" + country
+        cache = RedisCache(namespace=settings.RequestCache["namespace"])
+        data = cache.get(segmentation)
+        entitytype = self.get_argument('entitytype')
+        entity = self.get_argument('entity')
+        tweets = extract_tweets(data, entitytype, entity)
+        self.render(
+            "tweetlist.html",
+            tweets=tweets
+        )
+
 
 def getpercent(numer, denom):
     return int(float(numer)*100/denom)
@@ -56,13 +75,24 @@ def extract_entities(data, entitytype, num=10):
             })
     return result
 
-def extract_tweets(data, entitytype, numentities=10, numtweets=20):
+def extract_tweets0(data, entitytype, numentities=10, numtweets=20):
     result = []
     entities = data[entitytype][:numentities]
     for e in entities:
         result.append((e["text"], e["tweets"][:numtweets]))
     return result
-        
+
+def extract_tweets(data, entitytype, entity, numtweets=20):
+    result = []
+    entities = data[entitytype]
+    try:
+        e = next(ent for ent in entities if ent['text'] == entity)
+    except StopIteration:
+        e = None
+    if e:
+        result = [tw['html'] for tw in e['tweets'][:numtweets]]
+    return result
+
 
 if __name__ == "__main__":
     tornado.options.parse_command_line()

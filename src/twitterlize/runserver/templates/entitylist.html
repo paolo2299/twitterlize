@@ -7,7 +7,7 @@
         <ul class="nav nav-pills nav-stacked" id="users">
           {% for i, (username, count, percent) in enumerate([(u["text"], u["count"], u["percent"]) for u in users]) %}
             <li id="user-list" {% if i==0 %} class="active" {% end %}>
-              <a href="#top-tweets-user-{{username}}" data-toggle="pill" id=selector-user-{{username}}><b>@{{username}}</b></a>
+              <a data-toggle="pill" id=entity-user-{{username}}><b>@{{username}}</b></a>
                 <div class="progress progress-striped">
                    <div class="bar" style="width: {{percent}}%;">
                     </div>
@@ -20,7 +20,7 @@
         <ul class="nav nav-pills nav-stacked" id="hashtags">
           {% for i, (hashtag, count, percent) in enumerate([(h["text"], h["count"], h["percent"]) for h in hashtags]) %}
             <li id="hashtag-list">
-              <a href="#top-tweets-hashtag-{{hashtag}}" data-toggle="pill" id=selector-hashtag-{{hashtag}}><b>#{{hashtag}}</b></a>
+              <a data-toggle="pill" id=entity-hashtag-{{hashtag}}><b>#{{hashtag}}</b></a>
                 <div class="progress progress-striped">
                    <div class="bar" style="width: {{percent}}%;">
                     </div>

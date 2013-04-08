@@ -22,8 +22,8 @@
               <li><a data-toggle="pill">User profile</a></li>
             </ul>
           </div>
-          <div class="row-fluid">
-            {% module Template("tweetlist.html", user_tweets=user_tweets, hashtag_tweets=hashtag_tweets) %}
+          <div class="row-fluid" id="tweetlist">
+            {% module Template("tweetlist.html", tweets=tweets) %}
           </div>
         </div> <!-- /span10 -->
       </div> <!-- /row-fluid -->
@@ -35,16 +35,50 @@
 
 {% block javascript %}
 <script>
-function refresh_users(){
-  $(".entitylist").load("/topusers");
+
+$.urlParam = function(name){
+    var results = new RegExp('[\\?&amp;]' + name + '=([^&amp;#]*)').exec(window.location.href);
+    if(results == null){
+        return null;
+    } else {
+        return results[1] || 0;
+    }
 }
+
 $('#top-hashtags').bind('click', function(){
     $('#hashtag-list').attr('class','');
-    $('[id^=selector-hashtag]:first').trigger('click');
+    $('[id^=entity-hashtag]:first').trigger('click');
 });
+
 $('#top-users').bind('click', function(){
     $('#user-list').attr('class','');
-    $('[id^=selector-user]:first').trigger('click');
+    $('[id^=entity-user]:first').trigger('click');
+});
+
+$('[id^=entity-hashtag]').bind('click', function(){
+    var reg = /entity-hashtag-(\w+)/;
+    var elementid = $(this).attr('id');
+    var m = reg.exec(elementid);
+    var entity = m[1];
+    var code = $.urlParam('code');
+    if(!code){
+       code = "USA";
+    }
+    var url = "http://" + document.domain + ":8888/toptweets?entitytype=ht&entity=" + entity + "&code=" + code;
+    $("#tweetlist").load(url);
+});
+
+$('[id^=entity-user]').bind('click', function(){
+    var reg = /entity-user-(\w+)/;
+    var elementid = $(this).attr('id');
+    var m = reg.exec(elementid);
+    var entity = m[1];
+    var code = $.urlParam('code');
+    if(!code){
+       code = "USA";
+    }
+    var url = "http://" + document.domain + ":8888/toptweets?entitytype=um&entity=" + entity + "&code=" + code;
+    $("#tweetlist").load(url);
 });
 </script>
 {% end %}
