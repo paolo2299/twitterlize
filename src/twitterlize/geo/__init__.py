@@ -64,7 +64,7 @@ class Geo(object):
         Each country is a three-letter country code.
         Areas is a list of polygons defining the boundary of the country.
         Each polygon is a list of tuples (x,y).
-        These polygon's are projected using the chosen projection.
+        These polygons are projected using the chosen projection.
 	    
         """
         result = {}
