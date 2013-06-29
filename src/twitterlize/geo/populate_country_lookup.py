@@ -133,7 +133,7 @@ def generate_lookup(countries):
 if __name__ == "__main__":
     countries = Geo.countries()
     lookup = generate_lookup(countries)
-    datapath = os.path.join(settings.DATAFOLDER, "country-lookup.json")
+    datapath = os.path.join(settings.DATA_FOLDER, "country-lookup.json")
     g = open(datapath, 'w')
     g.write(json.dumps(lookup))
     g.close()

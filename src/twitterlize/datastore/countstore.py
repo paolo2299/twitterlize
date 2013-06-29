@@ -1,64 +1,63 @@
 import time
 from twitterlize.datastore.mongo.store import MongoStore
-from twitterlize import settings
-from twitterlize.utils import pad2, pad5, get_timeslice, add_dicts
-from operator import itemgetter
+from twitterlize.utils import get_timeslices
 
 
-class TopEntityStore(object):
-    """Store counts of hashtags and user mentions extracted from tweets.
+class CountStore(object):
+    """Store counts of incoming items such as tweets, hashtags or user mentions.
+    
+    All counts are segmented by a segmentation (i.e. a country), entity_type 
+    (i.e. "hashtag" or "user mention"), an entity and a time period.
 
     We segment the counts by time period so that a rolling tally over
     a restricted time period can be kept.
 
     """
     def __init__(self):
-        self._store = MongoStore("TopEntityStore")
+        self._store = MongoStore("CountStore")
 
-    def put(self, tweet, timestamp=None):
-        if not timestamp:
-            timestamp = message.timestamp
-        if not timestamp:
-            return
-        timeslice = get_timeslice(timestamp)
-        segs = message.segmentations
-        entities = message.entities
-        for segmentation in segs:
-            for entitytype, entities in message.entities.items():
-                for entity in entities:
-                    key = self.__class__.keyGen(entitytype, segmentation, timeslice)
-                    self._store.update({"_id":key},{"$inc":{entity: 1}}, upsert=True)
+    def put(self, entity_id, entity_type, segmentation, timestamp, total_count=None):
+        timeslices = get_timeslices(timestamp)
+        for timeslice in timeslices:
+            match_criteria = {
+                "entity_id": entity_id,
+                "entity_type": entity_type,
+                "segmentation": segmentation,
+                "timeslice": timeslice,
+            }
+            update_op = {}
+            if total_count:
+                #Note - This is non-atomic and so could cause inaccuracies
+                #TODO: Implement locking
+                existing = self._store.find(match_criteria)
+                if existing:
+                    existing = list(existing)[0]
+                    increment = total_count - existing["min_count"]
+                else:
+                    update_op["$set"] = {"min_count": total_count}
+                    increment = 1
+            else:
+                update_op["$set"] = {"min_count": 0}
+                increment = 1
+            update_op["$inc"] = increment
+            self._store.update(match_criteria, update_op, upsert=True)
 
-    def get_top(self, entitytype, segmentation, timestamp=None):
+    def get_top(self, entity_type, segmentation, num_to_get, timestamp=None):
         """Get the top entities in this segmentation."""
-        all_docs = []
-        fetch = settings.Aggregation["top_entities"]
+        result = []
         timestamp = timestamp or int(time.time())
-        segmentation = pad5(segmentation)
-        to_timestamp = get_timeslice(timestamp)
-        from_timestamp = to_timestamp - settings.Aggregation["history"]
-        step = settings.Aggregation["timeslice_length"]
-        current = from_timestamp
-        while current <= to_timestamp:
-            key = self.__class__.keyGen(entitytype, segmentation, current)
-            doc = self.find_one(key)
-            if doc:
-                del doc['_id']
-                all_docs.append(doc)
-            current += step
-        result = add_dicts(all_docs)
-        return sorted(result.items(), key=itemgetter(1), reverse=True)[:fetch]
-
-    def get_top_multiple(self, entitytype, segs, timestamp=None):
-        entitydicts = []
-        for seg in segs:
-            entitydicts.append(dict(self.get_top(entitytype, seg, timestamp)))
-        aggregated = add_dicts(entitydicts)
-        return sorted(aggregated.items(), key=itemgetter(1), reverse=True)
-        
-    @staticmethod
-    def keyGen(entitytype, segmentation, timeslice):
-        entitytype = pad2(entitytype)
-        segmentation = pad5(segmentation)
-        return ':'.join([entitytype, segmentation, str(timeslice)])
+        timeslice = get_timeslices(timestamp)[-1]
+        query = {
+            "entity_type": entity_type,
+            "segmentation": segmentation,
+            "timeslice": timeslice,
+        }
+        fields = {
+            "entity_id": 1,
+            "count": 1,
+        }
+        docs = self._store.find(query, fields=fields).sort("count", -1).limit(num_to_get)
+        for doc in docs:
+            result.append((doc["entity_id"], doc["count"]))
+        return result
 

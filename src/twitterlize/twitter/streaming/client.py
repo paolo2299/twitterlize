@@ -1,17 +1,17 @@
 import tweetstream
 import time
 import signal
-from twitterlize.message.tweet import Tweet
+from twitterlize.tweet import Tweet
 
 
 class StreamingClient:
-    def __init__(self, credentials, payload, store):
+    def __init__(self, credentials, payload, callback):
         self.count = 0
         self.last_reset = int(time.time())
         self.payload = payload
         self.stream = tweetstream.FilterStream
         self.twitterconf = credentials 
-        self.store = store
+        self.callback = callback
         self.run_stream()
 
     def run_stream(self):
@@ -37,7 +37,7 @@ class StreamingClient:
                     return True
                 self.count += 1
                 tw = Tweet(tweet)
-                self.store.put(tw)
+                self.callback(tw)
                 if not self.count % 100:
                     print 'processed %s docs' % self.count
                 

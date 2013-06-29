@@ -66,9 +66,10 @@ class MongoStore(object):
 	    scans.
 	    """
         if fields:
-            return self.store.find(query, fields)
+            cursor = self.store.find(query, fields)
         else:
-            return self.store.find(query)
+            cursor = self.store.find(query)
+        return cursor
 
     def count(self, query=None):
         query = query or {}
