@@ -5,18 +5,15 @@ from twitterlize.utils import pad2, pad5, get_timeslice, add_dicts
 from operator import itemgetter
 
 
-class CountStore(object):
-    """Store counts of incoming items such as tweets, hashtags or user mentions.
-    
-    All counts are segmented by a segmentation (i.e. a country), entity_type 
-    (i.e. "hashtag" or "user mention"), an entity and a time period.
+class TopEntityStore(object):
+    """Store counts of hashtags and user mentions extracted from tweets.
 
     We segment the counts by time period so that a rolling tally over
     a restricted time period can be kept.
 
     """
-    def __init__(self, store_id):
-        self._store = MongoStore(store_id)
+    def __init__(self):
+        self._store = MongoStore("TopEntityStore")
 
     def put(self, tweet, timestamp=None):
         if not timestamp:

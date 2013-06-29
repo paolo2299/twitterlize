@@ -5,9 +5,9 @@ from twitterlize.utils import serialize, deserialize #TODO
 #TODO - check memcache commands are correct
 
 class Memcache(Cache):
-    def __init__(self):
+    def __init__(self, namespace=None):
         self._memcache = None
-        self._namespace = settings.Memcache["namespace"]
+        self._namespace = namespace or ""
 
     @property
     def memcache(self):

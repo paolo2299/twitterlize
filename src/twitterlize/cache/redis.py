@@ -5,10 +5,10 @@ from twitterlize.utils import serialize, deserialize
 
         
 class RedisCache(Cache):
-    def __init__(self, cachesecs=0, namespace=""):
+    def __init__(self, cachesecs=0, namespace=None):
         self._redis = None
         self._cachesecs = cachesecs
-        self._namespace = settings.Redis["namespace"] + namespace
+        self._namespace = namespace or ""
 
     @property
     def redis(self):
