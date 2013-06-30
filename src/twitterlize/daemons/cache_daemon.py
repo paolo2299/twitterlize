@@ -3,13 +3,13 @@ import sys
 from twitterlize.geo import Geo
 from twitterlize.datastore.countstore import CountStore
 from twitterlize.datastore.tweetstore import TweetStore
-from twitterlize.cache.redis import RedisCache
+from twitterlize.cache.rediscache import RedisCache
 from twitterlize import settings
 
 
-def cache_top_tweets(t=None):
+def cache_top_tweets():
     #initialize stores
-    ts = t or int(time.time())
+    ts = int(time.time())
     countstore = CountStore()
     tweetstore = TweetStore()
     cache = RedisCache(namespace=settings.TopTweetsCache["namespace"])
@@ -26,7 +26,7 @@ def cache_top_tweets(t=None):
             top_tweets[entitytype] = []
             top_entities = countstore.get_top(entitytype, 
                                               segmentation,
-                                              settings.Aggregation['top_entities'], 
+                                              settings.Aggregation['top_entities'],
                                               ts)
             for entity, count in top_entities:
                 data = {"text":entity, "count":count, "tweets":[]}

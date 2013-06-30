@@ -10,7 +10,7 @@ class TweetStore(object):
     def __init__(self):
         self._store = MongoStore("TweetStore")
 
-    def put(self, tweet, timestamp=None):
+    def put(self, tweet):
         """Write a tweet to the store.
   
         Args:

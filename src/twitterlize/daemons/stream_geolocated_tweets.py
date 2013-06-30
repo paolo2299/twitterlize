@@ -17,12 +17,11 @@ class GeoTweetDaemon(StreamDaemon):
         return False
     
     def _on_tweet_callback(self, tweet):
-        timestamp = tweet.timestamp
         country_code = tweet.country_code
         if country_code:
             for entity_type, entities in tweet.entities.items():
                 for entity_id in entities:
-                    self._countstore.put(entity_id, entity_type, country_code, timestamp)
+                    self._countstore.put(entity_id, entity_type, country_code)
 
 if __name__ == "__main__":
     GeoTweetDaemon().stream()

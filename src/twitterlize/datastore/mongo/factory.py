@@ -16,7 +16,7 @@ class MongoFactory(object):
         except KeyError:
             raise Exception("Requested non-existent store %s" % storeid)
         # Check for a cached connection for this collection
-        db = storeconf["dbname"]
+        db = cls._get_db_name(storeconf)
         coll = storeconf["collection"]
         cachekey = cls._cachekey(db, coll)
         collection = cls._collections.get(cachekey)

@@ -1,8 +1,10 @@
 from twitterlize.settings import MongoStores
 from twitterlize.cache import CacheType
-from twitterlize.cache.redis import RedisCache
+from twitterlize.cache.rediscache import RedisCache
 from twitterlize.cache.memcache import Memcache
 from twitterlize.datastore.mongo.factory import MongoFactory
+
+#TODO implement locking for to make cache updates atomic
 
 class MongoStore(object):
     """Wrapper around mongo access that handles caching."""
@@ -19,19 +21,17 @@ class MongoStore(object):
         except KeyError:
             raise Exception("Unrecognized store ID: %s" % storeid)
         cachetype = storeconf["cachetype"]
+        cache_namespace = storeconf.get("cache_namespace")
         cachesecs = storeconf.get("cachesecs")
         # create the cache
         if cachetype == CacheType.Off:
             self._cache = None
         elif cachetype == CacheType.Volatile:
-            self._cache = Memcache()
+            self._cache = Memcache(namespace=cache_namespace)
         elif cachetype == CacheType.Persistent:
-            if cachesecs:
-                self._cache = RedisCache(cachesecs)
-            else:
-                self._cache = RedisCache()
+            self._cache = RedisCache(cachesecs=cachesecs, namespace=cache_namespace)
         else:
-            raise Exception("Unknown cachetype enumeration %s" % cachetype)
+            raise Exception("Unknown cache type enumeration %s" % cachetype)
 
     @property
     def store(self):
@@ -53,7 +53,6 @@ class MongoStore(object):
         if result:
             return result
         result = self.store.find_one(key)
-        self._set_cache(key, result)
         return result
 
     def save(self, doc):
@@ -62,9 +61,6 @@ class MongoStore(object):
         return key
 
     def find(self, query, fields=None):
-        """We don't look in the cache for complex queries or
-	    scans.
-	    """
         if fields:
             cursor = self.store.find(query, fields)
         else:
@@ -76,11 +72,14 @@ class MongoStore(object):
         return self.store.count(query)
 
     def update(self, query, update_dict, upsert=False):
-        #No sensible way to use atomic updates with caching
-        #We would have to implement our own 
-        #lock-fetch-save-unlock
-        #no need to do this for now
-        if self._cache:
-            raise Exception("Tried to perform an update on a MongoStore\
-	                     with a cache. This is not allowed.")
         self.store.update(query, update_dict, upsert=upsert)
+        if self._cache:
+            new_doc = self.store.find_one(query)
+            key = new_doc["_id"]
+            self._set_cache(key, new_doc)
+            
+    def delete_one(self, key):
+        self.store.remove({"_id": key})
+        if self._cache:
+            self._cache.delete(key)
+        

@@ -16,8 +16,8 @@ class CountStore(object):
     def __init__(self):
         self._store = MongoStore("CountStore")
 
-    def put(self, entity_id, entity_type, segmentation, timestamp, total_count=None):
-        timeslices = get_timeslices(timestamp)
+    def put(self, entity_id, entity_type, segmentation, total_count=None):
+        timeslices = get_timeslices()
         for timeslice in timeslices:
             match_criteria = {
                 "entity_id": entity_id,
@@ -46,7 +46,8 @@ class CountStore(object):
         """Get the top entities in this segmentation."""
         result = []
         timestamp = timestamp or int(time.time())
-        timeslice = get_timeslices(timestamp)[-1]
+        #We use the latest COMPLETE timeslice, not the latest one
+        timeslice = get_timeslices(timestamp)[-2]
         query = {
             "entity_type": entity_type,
             "segmentation": segmentation,

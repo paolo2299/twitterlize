@@ -1,9 +1,9 @@
 from twitterlize.cache import Cache
-from twitterlize import settings
-from twitterlize.datastore.redis.factory import RedisFactory
 from twitterlize.utils import serialize, deserialize
+from redis import StrictRedis
+from twitterlize import settings
 
-        
+       
 class RedisCache(Cache):
     def __init__(self, cachesecs=0, namespace=None):
         self._redis = None
@@ -21,17 +21,14 @@ class RedisCache(Cache):
         result = self.redis.set(key, serialize(val))
         expire = expire or self._cachesecs
         if expire:
-            self.expire(key, expire)
+            self.redis.expire(key, expire)
         return result
 
-    def get(self, key, expire=None):
+    def get(self, key):
         key = self._namespace + key
         val = self.redis.get(key)
         if val:
             val = deserialize(val)
-            expire = expire or self._cachesecs
-            if expire:
-                self.expire(key, expire)
         return val
 
     def expire(self, key, secs):
@@ -42,3 +39,18 @@ class RedisCache(Cache):
         key = self._namespace + key
         return self.redis.delete(key)
 
+
+class RedisFactory(object):
+
+    _redis = None
+
+    @classmethod
+    def getconn(cls):
+        """Return cached connection if it exists.
+        Otherwise, create a new connection and cache it.
+
+        """
+        if not cls._redis:
+            redisconf = settings.Redis
+            cls._redis = StrictRedis(redisconf["host"], redisconf["port"])
+        return cls._redis

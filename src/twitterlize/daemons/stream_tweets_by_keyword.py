@@ -34,12 +34,11 @@ class KeywordsTweetDaemon(object):
     
     def _on_tweet_callback(self, tweet):
         self._tweetstore.put(tweet)
-        timestamp = tweet.timestamp
         tweet_id = tweet.original_id
         for entity_type, entities in tweet.entities.items():
             for entity in entities:
                 segmentation = ":".join([entity_type, entity])
-                self._countstore.put(tweet_id, "tweet", segmentation, timestamp)
+                self._countstore.put(tweet_id, "tweet", segmentation)
     
     def _get_all_entities(self, entity_type, segmentations):
         fetch = settings.Aggregation["top_entities"]

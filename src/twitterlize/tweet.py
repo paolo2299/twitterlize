@@ -6,46 +6,35 @@ from twitterlize.geo import Geo
 class Tweet():
     """Twitter status update."""
 
-    DEFAULT_SEGS = [
-		    ""  #make sure all tweets are recorded  
-		   ]
-
     def __init__(self, data):
         self.data = data
 
     @property
     def id(self):
-        """See superclass docstring."""
-        self.data.get("id")
+        return self.data.get("id")
     
     @property
     def original_id(self):
-        """See superclass docstring."""
         return self.original_data.get("id")
 
     @property
     def text(self):
-        """See superclass docstring."""
         return self.original_data.get("text")
 
     @property
     def author(self):
-        """See superclass docstring."""
-        return str(self.original_data.get("user", {}).get("id"))
+        return self.original_data.get("user", {}).get("id")
 
     @property
     def authorpic(self):
-        """See superclass docstring."""
         return self.original_data.get("user", {}).get("profile_image_url")
 
     @property
     def username(self):
-        """See superclass docstring."""
         return self.original_data.get("user", {}).get("name")
 
     @property
     def screen_name(self):
-        """See superclass docstring."""
         return self.original_data.get("user", {}).get("screen_name")
 
     @property

@@ -1,5 +1,4 @@
-import uuid
-import hashlib
+import time
 from twitterlize import settings
 import json
 
@@ -12,25 +11,25 @@ def utf8(x):
         return x
     raise Exception("value %s must be utf8-encoded string or unicode" % x)
 
-def url_encode_dict(in_dict):
-    out_dict = {}
-    for k, v in in_dict.iteritems():
-        out_dict[utf8(k)] = utf8(v)
-    return out_dict 
-
-def get_timeslices(timestamp):
+def get_timeslices(timestamp=None):
+    timestamp = timestamp or int(time.time())
     timeslices = []
     granularity = int(settings.Aggregation["timeslice_granularity"])
     history = int(settings.Aggregation["history"])
     timeslice = ((timestamp - history)/granularity)*granularity
-    while timeslice < timestamp:
+    while timeslice <= timestamp:
         timeslices.append(timeslice)
         timeslice += granularity
     return timeslices
 
 def serialize(data):
+    if isinstance(data, basestring):
+        return data
     return json.dumps(data)
 
 def deserialize(data):
-    return json.loads(data)
+    try:
+        return json.loads(data)
+    except ValueError:
+        return data
     
