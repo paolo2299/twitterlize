@@ -1,7 +1,7 @@
 from twitterlize.settings import MongoStores
 from twitterlize.cache import CacheType
 from twitterlize.cache.rediscache import RedisCache
-from twitterlize.cache.memcache import Memcache
+from twitterlize.cache.memcache_cli import Memcache
 from twitterlize.datastore.mongo.factory import MongoFactory
 
 #TODO implement locking for to make cache updates atomic
@@ -60,16 +60,16 @@ class MongoStore(object):
         self._set_cache(key, doc)
         return key
 
-    def find(self, query, fields=None):
+    def find(self, query=None, fields=None):
+        query = query or {}
         if fields:
             cursor = self.store.find(query, fields)
         else:
             cursor = self.store.find(query)
         return cursor
 
-    def count(self, query=None):
-        query = query or {}
-        return self.store.count(query)
+    def count(self):
+        return self.store.count()
 
     def update(self, query, update_dict, upsert=False):
         self.store.update(query, update_dict, upsert=upsert)

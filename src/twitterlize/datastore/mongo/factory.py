@@ -32,6 +32,10 @@ class MongoFactory(object):
     def clean_up(cls):
         for coll in cls._collections.values():
             coll.end_request()
+            
+    @classmethod
+    def _get_db_name(cls, storeconf):
+        return storeconf["dbname"]
 
     @staticmethod
     def _cachekey(db, collection):

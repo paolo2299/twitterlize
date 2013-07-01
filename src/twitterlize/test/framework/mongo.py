@@ -10,7 +10,7 @@ class Mongo(object):
     @property
     def store(self):
         if not self._store:
-            self._store = MongoFactory.getconn(self.store_id)
+            self._store = MongoFactory.getconn(self._store_id)
         return self._store
 
     def find_one(self, key):
@@ -24,6 +24,12 @@ class Mongo(object):
         scans.
         """
         return self.store.find(query)
+    
+    def delete_one(self, idx):
+        return self.store.remove({"_id": idx})
+    
+    def clear(self):
+        return self.store.drop()
 
     def count(self, query=None):
         query = query or {}

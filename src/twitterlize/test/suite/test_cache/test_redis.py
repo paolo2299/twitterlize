@@ -9,6 +9,7 @@ class RedisCacheTest(unittest.TestCase):
     
     def setUp(self):
         self._redis = Redis()
+        self._redis.clear()
 
     def test_put_and_get_no_namespace(self):
         cache = RedisCache()

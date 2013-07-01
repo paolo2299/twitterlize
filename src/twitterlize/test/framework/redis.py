@@ -18,8 +18,12 @@ class Redis(object):
 
     def delete_key(self, key):
         return self.redis.delete(key)
+    
+    def clear(self):
+        return self.delete_pattern("unittest*")
 
     def delete_pattern(self, pattern):
-        #TODO
-        pass
+        keys = self.redis.keys(pattern)
+        if keys:
+            return self.redis.delete(*keys)
     
