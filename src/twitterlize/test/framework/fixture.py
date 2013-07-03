@@ -21,9 +21,11 @@ def setup_aggregation_settings():
     
 def setup_database_settings():
     settings.MongoStores["TweetStore"]["dbname"] = "twitterlize_unittest"
+    settings.MongoStores["TweetStore"]["cachetype"] = CacheType.Off
     settings.MongoStores["TweetStore"]["cache_namespace"] = "unittest_tws"
     
     settings.MongoStores["CountStore"]["dbname"] = "twitterlize_unittest"
+    settings.MongoStores["CountStore"]["cachetype"] = CacheType.Off
     settings.MongoStores["CountStore"]["cache_namespace"] = "unittest_cts"
     
     settings.MongoStores["unittest"] = {
