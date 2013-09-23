@@ -37,9 +37,10 @@ def setup_database_settings():
         "cache_namespace": "unittest:"
     }
     
-def setup_mock_time():
+def setup_mock_time(timestamp=None):
+    timestamp = timestamp or jan_1st_2013_midday
     def mock_time():
-        return jan_1st_2013_midday
+        return timestamp
     time.time = mock_time
     
 def clear_redis_unittest():

@@ -19,10 +19,11 @@ class Mongo(object):
     def save(self, doc):
         return self.store.save(doc)
 
-    def find(self, query):
+    def find(self, query=None):
         """We don't look in the cache for complex queries or
         scans.
         """
+	query = query or {}
         return self.store.find(query)
     
     def delete_one(self, idx):

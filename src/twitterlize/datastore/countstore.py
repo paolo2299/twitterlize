@@ -25,21 +25,31 @@ class CountStore(object):
                 "segmentation": segmentation,
                 "timeslice": timeslice,
             }
-            update_op = {}
             if total_count:
                 #Note - This is non-atomic and so could cause inaccuracies
                 #TODO: Implement locking
-                existing = self._store.find(match_criteria)
+                existing = list(self._store.find(match_criteria))
                 if existing:
-                    existing = list(existing)[0]
-                    increment = total_count - existing["min_count"]
+                    existing = existing[0]
+		    if existing.get("base_count"):
+                        update_op = {
+		            "$set": {
+			        "count": total_count - existing["base_count"] + 1
+			    }
+	                }
+		    else:
+		        raise ValueError("Tried to increment doc with no base_count using total_count")
                 else:
-                    update_op["$set"] = {"min_count": total_count}
-                    increment = 1
+                    update_op = {
+		        "$set": {
+			    "base_count": total_count,
+			    "count": 1
+			}
+	            }
             else:
-                update_op["$set"] = {"min_count": 0}
-                increment = 1
-            update_op["$inc"] = increment
+                update_op = {
+		    "$inc": {"count": 1}
+		}
             self._store.update(match_criteria, update_op, upsert=True)
 
     def get_top(self, entity_type, segmentation, num_to_get, timestamp=None):
@@ -47,7 +57,7 @@ class CountStore(object):
         result = []
         timestamp = timestamp or int(time.time())
         #We use the latest COMPLETE timeslice, not the latest one
-        timeslice = get_timeslices(timestamp)[-2]
+        timeslice = get_timeslices(timestamp)[-1]
         query = {
             "entity_type": entity_type,
             "segmentation": segmentation,
